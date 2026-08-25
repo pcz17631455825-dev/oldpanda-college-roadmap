@@ -38,3 +38,5 @@ yarn-error.log*
 /.wrangler/
 /outputs/
 /work/
+direction-lab.tar.gz
+/package_stage/
