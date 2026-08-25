@@ -25,3 +25,26 @@ npm run build
 ```
 
 `app/` 是完整网站源码；`docs/` 是为 GitHub Pages 准备的纯静态公开版本。
+
+## 代码使用与 2.0 版本
+
+本项目的**源代码**以 MIT License 开放，欢迎同学学习、修改并制作自己的 2.0 版本。完整范围见 [LICENSE](./LICENSE)。
+
+请注意：老熊猫名称、Logo、熊猫角色图片、原创题目、结果解读和页面文案**不在代码授权范围内**。制作衍生版本前，请替换为自己的项目名称、视觉资产、测评题目和文案；不得宣称是老熊猫官方版本或获得官方背书。详细要求见 [BRAND_AND_CONTENT_POLICY.md](./BRAND_AND_CONTENT_POLICY.md)。
+
+### 给 2.0 开发者的快速开始
+
+1. 点击仓库页面绿色 **Code** 按钮，选择 **Download ZIP**；或者执行：
+
+   ```bash
+   git clone https://github.com/pcz17631455825-dev/oldpanda-college-roadmap.git
+   ```
+
+2. 进入项目目录后安装依赖并启动本地开发：
+
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+3. 对外发布前，按上述 IP 与内容规则替换自己的名称、图片、题目和文案。
