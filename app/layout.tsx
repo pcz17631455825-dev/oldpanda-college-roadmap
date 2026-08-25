@@ -1,0 +1,1 @@
+import type{Metadata}from"next";import"./globals.css";export const metadata:Metadata={title:"方向实验室｜准大一专业测评",description:"10 分钟职业兴趣测评，找到适合你的大学专业与发展方向。"};export default function RootLayout({children}:Readonly<{children:React.ReactNode}>){return <html lang="zh-CN"><body>{children}</body></html>}
