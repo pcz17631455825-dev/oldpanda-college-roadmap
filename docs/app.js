@@ -6,6 +6,8 @@ const labels = { R: '实用型', I: '研究型', A: '艺术型', S: '社会型',
 const draftKey = 'career-assessment-v2-draft';
 let index = 0;
 let answers = Array.from({ length: questions.length }, () => []);
+let disposeHomeMotion = () => {};
+function clearHomeMotion() { disposeHomeMotion(); disposeHomeMotion = () => {}; }
 
 try {
   const draft = JSON.parse(localStorage.getItem(draftKey) || 'null');
@@ -19,8 +21,24 @@ const save = () => localStorage.setItem(draftKey, JSON.stringify({ index, answer
 const header = () => `<header class="site-header"><a class="brand" href="#home"><img src="./panda-avatar.png" alt="老熊猫"><span><b>老熊猫大学路线图</b><small>前大学辅导员 · 大学规划陪跑</small></span></a><nav><a href="#home">首页</a><a href="#resources">资料驿站</a></nav></header>`;
 
 function home() {
-  app.innerHTML = `<main class="education-home">${header()}<section class="education-hero"><div class="education-copy"><p class="education-kicker">老熊猫大学路线图</p><h1>大学开始前，<br>先把方向想明白。</h1><p class="education-lede">前大学辅导员老熊猫，陪你从真实选择里，看清适合自己的大学节奏与发展方向。</p><button class="education-cta" id="start">开始我的测评 <span>→</span></button><p class="education-note">48 道情境题，约 15 至 20 分钟完成</p></div><figure class="education-portrait"><img src="./panda-home-study.png" alt="老熊猫在校园阅览室认真写下大学规划"><figcaption>把每一步想清楚，再稳稳出发。</figcaption></figure></section><section class="education-intro"><p>先读自己，再选路径</p><h2>不急着选专业，<br>先把自己看明白。</h2><div>测评不直问你想考研、考公还是就业，而是用接近真实生活的情境，梳理兴趣、价值感、稳定需求与行动方式。</div></section><section class="education-routes" aria-label="三条大学发展路线"><p class="routes-title">你可能更适合的起步方式</p><article><b>升学</b><p>在课程、科研与长期能力里，为更高的平台蓄力。</p></article><article><b>体制</b><p>把政策理解、岗位机会与基本功，变成稳妥选择。</p></article><article><b>就业</b><p>用项目、实习与作品，让能力更早进入真实世界。</p></article></section><section class="education-resources" id="resources"><div><p>老熊猫资料驿站</p><h2>把有用的大学经验，留给真正需要的你。</h2><span>新生适应、选课规划、升学准备、求职与体制内规划资料会陆续更新，做成能下载、能反复使用的行动清单。</span></div><img src="./panda-avatar.png" alt="老熊猫头像"></section><footer>本测评用于职业探索与自我反思，不是临床心理诊断；结果仅供参考，不构成志愿填报或职业选择的唯一依据。</footer></main>`;
+  clearHomeMotion();
+  app.innerHTML = `<main class="education-home">${header()}<section class="education-hero"><div class="education-copy motion-hero-copy"><p class="education-kicker">老熊猫大学路线图</p><h1>大学开始前，<br>先把方向想明白。</h1><p class="education-lede">前大学辅导员老熊猫，陪你从真实选择里，看清适合自己的大学节奏与发展方向。</p><button class="education-cta" id="start">开始我的测评 <span>→</span></button><p class="education-note">48 道情境题，约 15 至 20 分钟完成</p></div><figure class="education-portrait motion-portrait"><img src="./panda-home-study.png" alt="老熊猫在校园阅览室认真写下大学规划"><figcaption>把每一步想清楚，再稳稳出发。</figcaption></figure></section><section class="education-intro motion-intro"><p>先读自己，再选路径</p><h2>不急着选专业，<br>先把自己看明白。</h2><div>测评不直问你想考研、考公还是就业，而是用接近真实生活的情境，梳理兴趣、价值感、稳定需求与行动方式。</div></section><section class="education-routes" aria-label="三条大学发展路线"><p class="routes-title">你可能更适合的起步方式</p><article class="motion-route"><b>升学</b><p>在课程、科研与长期能力里，为更高的平台蓄力。</p></article><article class="motion-route"><b>体制</b><p>把政策理解、岗位机会与基本功，变成稳妥选择。</p></article><article class="motion-route"><b>就业</b><p>用项目、实习与作品，让能力更早进入真实世界。</p></article></section><section class="education-resources motion-resource" id="resources"><div class="resource-heading"><p>老熊猫资料驿站</p><h2>把有用的大学经验，留给真正需要的你。</h2><span>新生适应、选课规划、升学准备、求职与体制内规划资料会陆续更新，做成能下载、能反复使用的行动清单。</span></div><div class="resource-shelf"><article class="resource-card resource-card-lead"><p>新生启程</p><h3>开学前的第一份安排</h3><span>报到、适应、选课与第一学期目标，先把容易慌乱的事理成一张清单。</span><b>整理中</b></article><article class="resource-card"><p>大学学习</p><h3>把四年过成自己的节奏</h3><span>课程、实践与复盘的规划方法，帮助你把日常积累成看得见的能力。</span><b>整理中</b></article><article class="resource-card"><p>未来准备</p><h3>升学、就业与体制内规划</h3><span>不同路径的准备逻辑与时间节点，后续会持续补充成可下载资料。</span><b>整理中</b></article></div></section><footer>本测评用于职业探索与自我反思，不是临床心理诊断；结果仅供参考，不构成志愿填报或职业选择的唯一依据。</footer></main>`;
   document.querySelector('#start').onclick = () => { index = 0; location.hash = 'test'; };
+  initHomeMotion();
+}
+
+function initHomeMotion() {
+  if (!window.gsap || !window.ScrollTrigger || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const { gsap, ScrollTrigger } = window;
+  gsap.registerPlugin(ScrollTrigger);
+  const context = gsap.context(() => {
+    gsap.fromTo('.motion-hero-copy', { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: .72, ease: 'power2.out' });
+    gsap.fromTo('.motion-portrait', { autoAlpha: 0, y: 22 }, { autoAlpha: 1, y: 0, duration: .86, delay: .08, ease: 'power2.out' });
+    gsap.fromTo('.motion-intro', { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: .62, ease: 'power2.out', scrollTrigger: { trigger: '.motion-intro', start: 'top 78%', toggleActions: 'play none none reverse' } });
+    gsap.fromTo('.motion-route', { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: .48, stagger: .1, ease: 'power2.out', scrollTrigger: { trigger: '.education-routes', start: 'top 80%', toggleActions: 'play none none reverse' } });
+    gsap.fromTo('.motion-resource', { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: .58, ease: 'power2.out', scrollTrigger: { trigger: '.motion-resource', start: 'top 78%', toggleActions: 'play none none reverse' } });
+  }, app);
+  disposeHomeMotion = () => context.revert();
 }
 
 function test() {
@@ -70,5 +88,5 @@ function result() {
   app.innerHTML = `<main class="results"><div class="result-top"><a href="#home" class="result-brand">🐼 老熊猫大学路线图</a><span>你的测评结果</span></div><section class="faction-card ${theme}"><p>你的发展倾向</p><h1>${report.faction}</h1><span>${report.faction === '升学派' ? '越学越有底气' : report.faction === '就业派' ? '在实践中把能力变现' : '在稳定中建立长期优势'}</span></section><section class="result-section"><p class="eyebrow">HOLLAND INTEREST CODE</p><h2>${report.code}</h2><p>${[...report.code].map((key) => labels[key]).join(' · ')}。结果来自行为情境、兴趣活动和价值排序的综合画像，不是人格标签。</p><div class="bars">${Object.entries(report.hollandScores).map(([key, value]) => `<div><span>${key}</span><i><b style="width:${value}%"></b></i><em>${value}</em></div>`).join('')}</div></section><section class="result-section"><p class="eyebrow">YOUR NEXT CHAPTER</p><h2>适合你的发展节奏</h2><p>${description}</p><div class="values">${report.rank.slice(0, 3).map((key, item) => `<span><b>TOP ${item + 1}</b>${labels[key]}</span>`).join('')}</div></section><p class="disclaimer">本测评用于职业探索与自我反思，不是临床心理诊断；结果仅供参考，不构成志愿填报或职业选择的唯一依据。</p></main>`;
 }
 
-function route() { if (location.hash === '#test') test(); else if (location.hash === '#results') result(); else home(); }
+function route() { if (location.hash === '#test') { clearHomeMotion(); test(); } else if (location.hash === '#results') { clearHomeMotion(); result(); } else home(); }
 addEventListener('hashchange', route); route();
