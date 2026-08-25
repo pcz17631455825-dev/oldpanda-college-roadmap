@@ -25,7 +25,7 @@ function home() {
 
 function test() {
   const question = questions[index]; const multiple = question.type === 'multiple'; const selected = answers[index]; const last = index === questions.length - 1;
-  app.innerHTML = `<main class="assessment-shell"><div class="assessment-top"><span>老熊猫陪你梳理方向</span><span>${index + 1} / ${questions.length}</span></div><div class="progress"><i style="width:${(index + 1) / questions.length * 100}%"></i></div><p class="question-kind">${multiple ? `情境选择 · 可多选，最多 ${question.maxSelections || 2} 项` : '情境选择 · 每题选最接近你的反应'}</p><h1>${question.text}</h1><div class="options">${question.options.map((option, item) => `<button class="choice ${selected.includes(item) ? 'selected' : ''}" data-item="${item}"><span>${'ABCD'[item]}</span>${option.label}</button>`).join('')}</div><div class="assessment-bottom"><button class="text-button" id="back" ${index ? '' : 'disabled'}>← 上一题</button>${multiple || last ? `<button class="primary small" id="next" ${selected.length ? '' : 'disabled'}>${last ? '提交测评，开始解读 →' : '下一题 →'}</button>` : '<span class="answer-note">没有标准答案</span>'}</div></main>`;
+  app.innerHTML = `<main class="assessment-shell"><div class="assessment-top"><span>老熊猫陪你梳理方向</span><span>${index + 1} / ${questions.length}</span></div><div class="progress"><i style="width:${(index + 1) / questions.length * 100}%"></i></div><p class="question-kind">${multiple ? `情境选择 · 可多选，最多 ${question.maxSelections || 2} 项` : '情境选择 · 每题选最接近你的反应'}</p><h1>${question.text}</h1><div class="options">${question.options.map((option, item) => `<button class="choice ${selected.includes(item) ? 'selected' : ''}" data-item="${item}"><span>${'ABCD'[item]}</span>${option.label}</button>`).join('')}</div><div class="assessment-bottom"><button class="text-button" id="back" ${index ? '' : 'disabled'}>← 上一题</button>${multiple ? `<button class="primary small" id="next" ${selected.length ? '' : 'disabled'}>下一题 →</button>` : last && selected.length ? '<button class="primary small" id="next">提交测评，开始解读 →</button>' : '<span class="answer-note">没有标准答案</span>'}</div></main>`;
   document.querySelectorAll('.choice').forEach((button) => button.onclick = () => {
     const item = Number(button.dataset.item);
     if (multiple) {
@@ -34,7 +34,8 @@ function test() {
       save(); test();
     } else {
       answers[index] = [item]; save();
-      if (!last) { index += 1; setTimeout(test, 160); }
+      if (last) test();
+      else { index += 1; setTimeout(test, 160); }
     }
   });
   document.querySelector('#back').onclick = () => { if (index) { index -= 1; save(); test(); } };
