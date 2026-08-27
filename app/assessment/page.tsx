@@ -1,1 +1,4 @@
-import{Assessment}from"@/components/Assessment";export default function AssessmentPage(){return <Assessment/>}
+import "../launch-update.css";
+import { Assessment } from "@/components/Assessment";
+
+export default function AssessmentPage() { return <Assessment />; }
