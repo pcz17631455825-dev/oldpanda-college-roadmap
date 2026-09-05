@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { questions } from "@/data/questions";
+import { normalizeCareerDraft } from "@/features/career-draft";
 
 // Keep the new assessment separate from legacy drafts that could contain
 // incorrect default selections from an earlier version.
@@ -12,25 +13,30 @@ export function Assessment() {
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<number[][]>(Array.from({ length: questions.length }, () => []));
   const [generating, setGenerating] = useState(false);
+  const [storageError, setStorageError] = useState(false);
+  const [ready, setReady] = useState(false);
+  const advancing = useRef(false);
+  const navigationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const question = questions[index];
   const isLast = index === questions.length - 1;
   const completed = answers.filter((answer) => answer.length).length;
 
   useEffect(() => {
-    const saved = localStorage.getItem(draftKey);
-    if (!saved) return;
     try {
-      const draft = JSON.parse(saved) as { index: number; answers: number[][] };
-      const nextIndex = Math.min(draft.index, questions.length - 1);
-      const nextAnswers = Array.from({ length: questions.length }, (_, item) => draft.answers[item] || []);
-      const timer = window.setTimeout(() => { setIndex(nextIndex); setAnswers(nextAnswers); }, 0);
+      const saved = localStorage.getItem(draftKey);
+      const { index: nextIndex, answers: nextAnswers } = normalizeCareerDraft(saved ? JSON.parse(saved) : null, questions);
+      const timer = window.setTimeout(() => { setIndex(nextIndex); setAnswers(nextAnswers); setReady(true); }, 0);
       return () => window.clearTimeout(timer);
-    } catch { localStorage.removeItem(draftKey); }
+    } catch {
+      const timer = window.setTimeout(() => { setStorageError(true); setReady(true); }, 0);
+      return () => window.clearTimeout(timer);
+    }
   }, []);
+  useEffect(() => () => { if (navigationTimer.current) clearTimeout(navigationTimer.current); }, []);
 
   const save = (next: number[][], nextIndex = index) => {
     setAnswers(next);
-    localStorage.setItem(draftKey, JSON.stringify({ index: nextIndex, answers: next }));
+    try { localStorage.setItem(draftKey, JSON.stringify({ index: nextIndex, answers: next })); setStorageError(false); } catch { setStorageError(true); }
   };
 
   const finish = (final: number[][]) => {
@@ -40,13 +46,14 @@ export function Assessment() {
       save(final, firstMissing);
       return;
     }
-    localStorage.setItem(resultKey, JSON.stringify({ answers: final, duration: 0 }));
-    localStorage.removeItem(draftKey);
+    try { localStorage.setItem(resultKey, JSON.stringify({ answers: final, duration: 0 })); localStorage.removeItem(draftKey); }
+    catch { setStorageError(true); return; }
     setGenerating(true);
-    window.setTimeout(() => window.location.assign("/results"), 360);
+    navigationTimer.current = setTimeout(() => window.location.assign("/results"), 360);
   };
 
   const choose = (option: number) => {
+    if (advancing.current) return;
     const current = answers[index];
     const maximum = question.maxSelections ?? question.options.length;
     if (question.type === "multiple" && !current.includes(option) && current.length >= maximum) return;
@@ -57,7 +64,8 @@ export function Assessment() {
     if (question.type === "single" && !isLast) {
       const nextIndex = index + 1;
       save(next, nextIndex);
-      window.setTimeout(() => setIndex(nextIndex), 160);
+      advancing.current = true;
+      navigationTimer.current = setTimeout(() => { setIndex(nextIndex); advancing.current = false; }, 160);
       return;
     }
     save(next);
@@ -73,13 +81,14 @@ export function Assessment() {
     }
   };
 
+  if (!ready) return <main className="result-transition" role="status"><p>正在恢复这台设备的答题进度…</p></main>;
   if (generating) return <main className="result-transition" role="status" aria-live="polite"><p>正在生成你的大学路线图…</p></main>;
 
   return <main className="assessment-shell">
     <div className="assessment-top"><span>老熊猫陪你梳理方向</span><span>{index + 1} / {questions.length}</span></div>
     <div className="progress" role="progressbar" aria-label="测评答题进度" aria-valuemin={1} aria-valuemax={questions.length} aria-valuenow={index + 1} aria-valuetext={`第 ${index + 1} 题，共 ${questions.length} 题`}><i style={{ width: `${((index + 1) / questions.length) * 100}%` }} /></div>
     {completed > 0 && completed % 12 === 0 && <p className="stage-feedback" role="status">你已经完成 {Math.round((completed / questions.length) * 100)}%，方向正在变得更清楚。</p>}
-    <p className="answer-storage">当前已答 {completed} / {questions.length} 题 · 答案仅保存在这台设备；中途退出，下次可继续。</p>
+    <p className="answer-storage" role={storageError ? "alert" : undefined}>当前已答 {completed} / {questions.length} 题 · {storageError ? "当前浏览器无法保存；请允许本地存储后再提交，暂勿刷新或关闭。" : "答案仅保存在这台设备；中途退出，下次可继续。"}</p>
     <p className="question-kind">{question.type === "multiple" ? `情境选择 · 可多选，最多 ${question.maxSelections ?? 2} 项` : "情境选择 · 每题选最接近你的反应"}</p>
     <h1>{question.text}</h1>
     <div className="options">{question.options.map((option, item) => <button type="button" key={option.label} onClick={() => choose(item)} aria-pressed={answers[index].includes(item)} className={answers[index].includes(item) ? "selected" : ""}><span>{String.fromCharCode(65 + item)}</span>{option.label}</button>)}</div>

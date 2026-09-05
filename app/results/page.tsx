@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { questions } from "@/data/questions";
+import { normalizeCareerDraft } from "@/features/career-draft";
 import { computeResult, hollandLabels, valueLabels } from "@/lib/assessment";
 import type { AssessmentResult, Faction } from "@/types";
 import "../launch-update.css";
@@ -24,9 +25,9 @@ export default function ResultsPage() {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(resultKey);
+      const saved = localStorage.getItem(draftKey) || localStorage.getItem(resultKey);
       const parsed = saved ? JSON.parse(saved) as { answers?: number[][]; duration?: number } : null;
-      const answers = Array.from({ length: questions.length }, (_, item) => parsed?.answers?.[item] || []);
+      const { answers } = normalizeCareerDraft(parsed, questions);
       const firstMissing = answers.findIndex((answer) => !answer.length);
       if (firstMissing !== -1) {
         const timer = window.setTimeout(() => {
@@ -63,7 +64,7 @@ export default function ResultsPage() {
     <section className="result-section"><p className="eyebrow">你的兴趣偏好</p><h2>{result.hollandCode}</h2><p className="code-explain">{result.hollandCode.split("").map((key) => hollandLabels[key as keyof typeof hollandLabels]).join(" · ")}。结果来自行为情境、兴趣活动和价值排序的综合画像，不是人格标签。</p><div className="bars">{Object.entries(result.hollandScores).map(([key, score]) => <div key={key}><span>{key}</span><i><b style={{ width: `${score}%` }} /></i><em>{score}</em></div>)}</div></section>
     <section className="result-section path"><p className="eyebrow">你接下来可以怎么做</p><h2>适合你的发展节奏</h2><p>{result.factionDescription}</p><div className="values">{result.valuesRanking.slice(0, 3).map((key, index) => <span key={key}><b>TOP {index + 1}</b>{valueLabels[key]}</span>)}</div></section>
     <section className="result-action"><p className="eyebrow">接下来，先走这一步</p><h2>{guide.title}</h2><p>{guide.body}</p><a className="route-video-button" href={guide.url} target="_blank" rel="noopener noreferrer">{guide.action}</a></section>
-    <section className="fan-group" aria-labelledby="fan-group-title"><div className="fan-group-copy"><p className="eyebrow">进粉丝群领取资料</p><h2 id="fan-group-title">测完别让结果躺着，进群领取大学规划资料</h2><p>老熊猫会在抖音粉丝群持续更新新生核验、选课、升学、就业和体制规划资料。先保存二维码，再打开抖音扫一扫进群。</p><ol><li>保存二维码到相册</li><li>打开抖音搜索页扫一扫</li><li>加入“🐼高校生存指南1群”</li></ol><small>当前二维码有效至 2026 年 9 月 3 日；如失效，请回老熊猫抖音主页查看最新入群入口。</small></div><img src="/douyin-fan-group-qr.jpg" alt="加入老熊猫抖音粉丝群“高校生存指南1群”的二维码，请保存后用抖音扫一扫" width="840" height="1107" /></section>
+    <section className="fan-group" aria-labelledby="fan-group-title"><div className="fan-group-copy"><p className="eyebrow">进粉丝群领取资料</p><h2 id="fan-group-title">测完别让结果躺着，进群领取大学规划资料</h2><p>老熊猫会在抖音粉丝群持续更新新生核验、选课、升学、就业和体制规划资料。先保存二维码，再打开抖音扫一扫进群。</p><ol><li>保存二维码到相册</li><li>打开抖音搜索页扫一扫</li><li>加入“🐼高校生存指南2群”</li></ol><small>如二维码暂时无法使用，请回老熊猫抖音主页查看最新入群入口。</small></div><img src="/douyin-fan-group-2-qr.jpg" alt="加入老熊猫抖音粉丝群“高校生存指南2群”的二维码，请保存后用抖音扫一扫" width="840" height="1107" /></section>
     <p className="result-refresh-note">结果不是永久标签。这反映的是你此刻更适合的起步方式，第一学期后也可以重新测一次。</p>
     <p className="disclaimer">本测评用于职业探索与自我反思，不是临床心理诊断；结果仅供参考，不构成志愿填报或职业选择的唯一依据。</p>
   </main>;
